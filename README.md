@@ -1,7 +1,7 @@
 <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
 <p align="center">
   <a href="https://www.helgard.dev">
-    <img alt="Gatsby" src="./helgard-icon.svg" width="200" />
+    <img alt="Gatsby" src="./src/images/helgard-icon.svg" width="200" />
   </a>
 </p>
 <h1 align="center">
