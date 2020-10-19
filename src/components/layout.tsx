@@ -6,13 +6,13 @@
  */
 
 import React, { FunctionComponent } from "react"
-import { useStaticQuery, graphql } from "gatsby"
+// import { useStaticQuery, graphql } from "gatsby"
 
-import Header from "./header"
+// import Header from "./header"
 import "./layout.scss"
 
 const Layout: FunctionComponent = ({ children }) => {
-  const data = useStaticQuery(graphql`
+  /* const data = useStaticQuery(graphql`
     query SiteTitleQuery {
       site {
         siteMetadata {
@@ -20,20 +20,21 @@ const Layout: FunctionComponent = ({ children }) => {
         }
       }
     }
-  `)
+  `) */
 
   return (
     <>
-      <Header siteTitle={data.site.siteMetadata?.title || `Title`} />
+      {/* <Header siteTitle={data.site.siteMetadata?.title || `Title`} /> */}
       <div
         style={{
           margin: `0 auto`,
-          maxWidth: 960,
-          padding: `0 1.0875rem 1.45rem`,
+          position: `relative`,
+          // maxWidth: 960,
+          // padding: `0 1.0875rem 1.45rem`,
         }}
       >
         <main>{children}</main>
-        <footer
+        {/* <footer
           style={{
             marginTop: `2rem`,
           }}
@@ -41,7 +42,7 @@ const Layout: FunctionComponent = ({ children }) => {
           © {new Date().getFullYear()}, Built with
           {` `}
           <a href="https://www.gatsbyjs.com">Gatsby</a>
-        </footer>
+        </footer> */}
       </div>
     </>
   )
