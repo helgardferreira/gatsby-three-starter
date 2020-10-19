@@ -1,13 +1,14 @@
 import React, { Suspense, useEffect, useRef } from "react"
-import { Link } from "gatsby"
+// import { Link } from "gatsby"
 
 import Layout from "../components/layout"
-import Image from "../components/image"
+// import Image from "../components/image"
 import SEO from "../components/seo"
 import { Canvas } from "react-three-fiber"
-import Hand from "../components/gltf/Hand"
+// import HandModel from "../components/gltf/Hand"
 import { Color } from "three"
 import { graphql, useStaticQuery } from "gatsby"
+import HandAnimationModel from "../components/gltf/HandAnimated"
 
 const IndexPage = () => {
   return (
@@ -35,9 +36,16 @@ const IndexPage = () => {
 
 function HandCanvas() {
   // const mouse = useRef({ x: 0, y: 0 })
-  const data = useStaticQuery(graphql`
+  /* const data = useStaticQuery(graphql`
     query {
       hand: file(relativePath: { eq: "hand.glb" }) {
+        publicURL
+      }
+    }
+  `) */
+  const data = useStaticQuery(graphql`
+    query {
+      hand: file(relativePath: { eq: "hand_animated.glb" }) {
         publicURL
       }
     }
@@ -53,10 +61,10 @@ function HandCanvas() {
       // onMouseMove={e => (mouse.current = getMousePos(e))}
       // shadowMap
       pixelRatio={pixelRatio.current}
-      camera={{ position: [0, 0, 10] }}
+      camera={{ position: [0, 5, 15] }}
       style={{
-        margin: 0,
         padding: 0,
+        margin: 0,
         width: "100%",
         height: "100vh",
         position: "absolute",
@@ -71,10 +79,16 @@ function HandCanvas() {
       />
       <directionalLight position={[-8, 12, 8]} castShadow />
       <Suspense fallback={null}>
-        <Hand
+        {/* <HandModel
           gltfURL={data.hand.publicURL}
           position={[0, -35, 0]}
           scale={[10, 10, 10]}
+        /> */}
+        <HandAnimationModel
+          gltfURL={data.hand.publicURL}
+          position={[0, -70, 0]}
+          rotation={[0, 0, 0]}
+          scale={[40, 40, 40]}
         />
       </Suspense>
     </Canvas>
