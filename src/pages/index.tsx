@@ -36,16 +36,12 @@ const IndexPage = () => {
 
 function HandCanvas() {
   // const mouse = useRef({ x: 0, y: 0 })
-  /* const data = useStaticQuery(graphql`
+  const { handAnimated, textureImage } = useStaticQuery(graphql`
     query {
-      hand: file(relativePath: { eq: "hand.glb" }) {
+      handAnimated: file(relativePath: { eq: "hand-animated.glb" }) {
         publicURL
       }
-    }
-  `) */
-  const data = useStaticQuery(graphql`
-    query {
-      hand: file(relativePath: { eq: "hand_animated.glb" }) {
+      textureImage: file(relativePath: { eq: "neon-marble-texture.jpg" }) {
         publicURL
       }
     }
@@ -61,7 +57,7 @@ function HandCanvas() {
       // onMouseMove={e => (mouse.current = getMousePos(e))}
       // shadowMap
       pixelRatio={pixelRatio.current}
-      camera={{ position: [0, 5, 15] }}
+      camera={{ position: [0, 1.5, 5] }}
       style={{
         padding: 0,
         margin: 0,
@@ -79,13 +75,9 @@ function HandCanvas() {
       />
       <directionalLight position={[-8, 12, 8]} castShadow />
       <Suspense fallback={null}>
-        {/* <HandModel
-          gltfURL={data.hand.publicURL}
-          position={[0, -35, 0]}
-          scale={[10, 10, 10]}
-        /> */}
         <HandAnimationModel
-          gltfURL={data.hand.publicURL}
+          gltfURL={handAnimated.publicURL}
+          textureURL={textureImage.publicURL}
           position={[0, -70, 0]}
           rotation={[0, 0, 0]}
           scale={[40, 40, 40]}

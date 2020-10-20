@@ -11,49 +11,89 @@ import React, {
 import { useFrame } from "react-three-fiber"
 
 import { GLTF } from "three/examples/jsm/loaders/GLTFLoader"
-import { AnimationMixer, LoopPingPong } from "three"
+import {
+  AnimationAction,
+  AnimationMixer,
+  Bone,
+  Group,
+  IUniform,
+  LoopPingPong,
+  MeshStandardMaterial,
+  ShaderMaterial,
+  SkinnedMesh,
+} from "three"
 import useGLTF from "../../lib/hooks/useGLTF"
+import useTexture from "../../lib/hooks/useTexture"
+
+import fluidMarbleFragment from "./shaders/fluidMarbleFragment.glsl"
+import fluidMarbleVertex from "./shaders/fluidMarbleVertex.glsl"
 
 type GLTFResult = GLTF & {
   nodes: {
-    hand_anatomy_man: THREE.SkinnedMesh
-    root: THREE.Bone
-    ["MCH-hand_ikparentL"]: THREE.Bone
-    ["MCH-upper_arm_ik_targetparentL"]: THREE.Bone
+    hand_anatomy_man: SkinnedMesh
+    root: Bone
+    ["MCH-hand_ikparentL"]: Bone
+    ["MCH-upper_arm_ik_targetparentL"]: Bone
   }
   materials: {
-    White: THREE.MeshStandardMaterial
+    White: MeshStandardMaterial
   }
 }
 
 type ActionName = "rigAction"
-type GLTFActions = Record<ActionName, THREE.AnimationAction>
+type GLTFActions = Record<ActionName, AnimationAction>
 
 interface IProps {
   gltfURL: string
+  textureURL: string
+}
+
+interface IFragmentUniforms {
+  [uniform: string]: IUniform
 }
 
 const HandAnimationModel: FunctionComponent<
   IProps & JSX.IntrinsicElements["group"]
-> = ({ gltfURL, ...props }) => {
+> = ({ gltfURL, textureURL, ...props }) => {
   useLayoutEffect(() => void useGLTF.preload(gltfURL), [gltfURL])
 
-  const group = useRef<THREE.Group>()
-  const data = useGLTF<GLTFResult>(gltfURL)
+  const group = useRef<Group>()
+  const {
+    nodes,
+    // materials,
+    animations,
+  } = useGLTF<GLTFResult>(gltfURL)
 
-  const { nodes, materials, animations } = data
+  const texture = useTexture(textureURL)
+
+  const uniforms = useRef<IFragmentUniforms>({
+    // resolution: { value: new Vector3() },
+    time: { value: 0 },
+    marble: { value: texture },
+  })
 
   const actions = useRef<GLTFActions>()
   const [mixer] = useState(() => new AnimationMixer(nodes.hand_anatomy_man))
 
-  useFrame((state, delta) => mixer.update(delta))
+  const shaderMaterial = new ShaderMaterial({
+    uniforms: uniforms.current,
+    vertexShader: fluidMarbleVertex,
+    fragmentShader: fluidMarbleFragment,
+    skinning: true,
+  })
+
+  useFrame(({ clock }, delta) => {
+    mixer.update(delta)
+    uniforms.current.time.value = clock.getElapsedTime()
+  })
+
   useEffect(() => {
     actions.current = {
       rigAction: mixer.clipAction(animations[0], group.current),
     }
     actions.current.rigAction.timeScale = 1
     actions.current.rigAction.loop = LoopPingPong
-    actions.current.rigAction.play()
+    // actions.current.rigAction.play()
     return () => animations.forEach(clip => mixer.uncacheClip(clip))
   }, [])
 
@@ -64,8 +104,9 @@ const HandAnimationModel: FunctionComponent<
           <primitive object={nodes.root} />
           <primitive object={nodes["MCH-hand_ikparentL"]} />
           <primitive object={nodes["MCH-upper_arm_ik_targetparentL"]} />
+
           <skinnedMesh
-            material={materials.White}
+            material={shaderMaterial}
             geometry={nodes.hand_anatomy_man.geometry}
             skeleton={nodes.hand_anatomy_man.skeleton}
           />
