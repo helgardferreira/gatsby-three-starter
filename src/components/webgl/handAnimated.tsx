@@ -41,7 +41,7 @@ type GLTFResult = GLTF & {
 type ActionName = "rigAction"
 type GLTFActions = Record<ActionName, AnimationAction>
 
-interface IProps {
+interface IHandProps {
   gltfURL: string
   textureURL: string
 }
@@ -51,7 +51,7 @@ interface IFragmentUniforms {
 }
 
 const HandAnimatedModel: FunctionComponent<
-  IProps & JSX.IntrinsicElements["group"]
+  IHandProps & JSX.IntrinsicElements["group"]
 > = ({ gltfURL, textureURL, ...props }) => {
   useLayoutEffect(() => void useGLTF.preload(gltfURL), [gltfURL])
 
@@ -91,7 +91,7 @@ const HandAnimatedModel: FunctionComponent<
     }
     actions.current.rigAction.timeScale = 1
     actions.current.rigAction.loop = LoopPingPong
-    actions.current.rigAction.play()
+    // actions.current.rigAction.play()
     return () => animations.forEach(clip => mixer.uncacheClip(clip))
   }, [])
 
