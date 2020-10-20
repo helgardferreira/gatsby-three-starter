@@ -1,2 +1,2 @@
-declare module "*.glsl"
 declare module "*.scss"
+declare module "*.glsl"

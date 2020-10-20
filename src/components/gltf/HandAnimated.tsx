@@ -22,8 +22,9 @@ import {
 import useGLTF from "../../lib/hooks/useGLTF"
 import useTexture from "../../lib/hooks/useTexture"
 
-import fluidMarbleFragment from "./shaders/fluidMarbleFragment.glsl"
-import fluidMarbleVertex from "./shaders/fluidMarbleVertex.glsl"
+// Leveraging WebPack's raw loader
+import fluidMarbleFragment from "raw-loader!./shaders/fluidMarbleFragment.glsl"
+import fluidMarbleVertex from "raw-loader!./shaders/fluidMarbleVertex.glsl"
 
 type GLTFResult = GLTF & {
   nodes: {
