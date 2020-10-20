@@ -50,7 +50,7 @@ interface IFragmentUniforms {
   [uniform: string]: IUniform
 }
 
-const HandAnimationModel: FunctionComponent<
+const HandAnimatedModel: FunctionComponent<
   IProps & JSX.IntrinsicElements["group"]
 > = ({ gltfURL, textureURL, ...props }) => {
   useLayoutEffect(() => void useGLTF.preload(gltfURL), [gltfURL])
@@ -91,7 +91,7 @@ const HandAnimationModel: FunctionComponent<
     }
     actions.current.rigAction.timeScale = 1
     actions.current.rigAction.loop = LoopPingPong
-    // actions.current.rigAction.play()
+    actions.current.rigAction.play()
     return () => animations.forEach(clip => mixer.uncacheClip(clip))
   }, [])
 
@@ -114,4 +114,4 @@ const HandAnimationModel: FunctionComponent<
   )
 }
 
-export default HandAnimationModel
+export default HandAnimatedModel

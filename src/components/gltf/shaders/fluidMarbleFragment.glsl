@@ -144,7 +144,6 @@ float cnoise(vec4 P, vec4 rep){
 
 void main() {
   // Experimentation
-
   /* // float noiseDistortion = 0.2 * cnoise(vec4(vUv * 20., time / 5., 0.), vec4(10.));
   // vec4 txt = texture2D(marble, vUv + noiseDistortion);
 
@@ -152,6 +151,9 @@ void main() {
   // altFakeUV = abs(altFakeUV);
   // altFakeUV = fract(altFakeUV + vec2(time / 20., time / 10.));
   
+  // float lighting = dot(cameraPosition, vNormal);
+  // lighting = lighting;
+
   // gl_FragColor = vec4(fakeUV, 0.0, 1.);
   // gl_FragColor = vec4(vUv, 0.0, 1.);
   // gl_FragColor = vec4(mix(vec3(1.), txt.rgb, lighting), 1.);
@@ -164,17 +166,23 @@ void main() {
   float phi = acos(vNormal.y);
   float angle = atan(vNormal.x, vNormal.z);
 
-  float lighting = dot(cameraPosition, vNormal);
-  lighting = lighting;
-
-  vec2 fakeUV = vec2((angle + PI) / (2. * PI), phi / PI);
-
   float fSpeed = 20.;
-
+  vec2 fakeUV = vec2((angle + PI) / (2. * PI), phi / PI);
   fakeUV = fract(fakeUV + vec2(time / fSpeed, time / (fSpeed / 2.)));
 
-  float noiseDistortion = 0.2 * cnoise(vec4(fakeUV * 20., time / 10., 0.), vec4(1.));
+  // vec2 moveUV = vUv;
+  // moveUV = fract(vUv + vec2(time / fSpeed, time / (fSpeed / 2.)));
+
+  float noiseDistortion = 0.2 * cnoise(vec4(fakeUV * 20., time / 10., 0.), vec4(2.));
   vec4 txt = texture2D(marble, fakeUV + noiseDistortion);
 
   gl_FragColor = vec4(txt);
+
+  // Comparisons
+  // gl_FragColor = vec4(texture2D(marble, fakeUV));
+  // gl_FragColor = vec4(texture2D(marble, moveUV));
+  // gl_FragColor = vec4(fakeUV, 0.0, 1.);
+  // gl_FragColor = vec4(moveUV, 0.0, 1.);
+  // gl_FragColor = vec4(vNormal, 1.);
+  // gl_FragColor = vec4(1., 1., 1., 1.);
 }

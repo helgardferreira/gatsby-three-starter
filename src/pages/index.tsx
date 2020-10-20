@@ -8,7 +8,7 @@ import { Canvas } from "react-three-fiber"
 // import HandModel from "../components/gltf/Hand"
 import { Color } from "three"
 import { graphql, useStaticQuery } from "gatsby"
-import HandAnimationModel from "../components/gltf/HandAnimated"
+import HandAnimatedModel from "../components/gltf/handAnimated"
 
 const IndexPage = () => {
   return (
@@ -75,7 +75,7 @@ function HandCanvas() {
       />
       <directionalLight position={[-8, 12, 8]} castShadow />
       <Suspense fallback={null}>
-        <HandAnimationModel
+        <HandAnimatedModel
           gltfURL={handAnimated.publicURL}
           textureURL={textureImage.publicURL}
           position={[0, -70, 0]}
