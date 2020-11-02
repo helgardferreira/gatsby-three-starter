@@ -6,18 +6,18 @@ import Layout from "../components/layout"
 import SEO from "../components/seo"
 import { Canvas } from "react-three-fiber"
 // import HandModel from "../components/gltf/Hand"
-import { Color, Vector3 } from "three"
 import { graphql, useStaticQuery } from "gatsby"
 
 import HandAnimatedModel from "../components/webgl/handAnimated"
 import Blob from "../components/webgl/blob"
 import CameraControls from "../components/webgl/cameraControls"
+import { useSpring } from "framer-motion"
 
 const IndexPage = () => {
   return (
     <Layout>
       <SEO title="Home" />
-      {/* <h1
+      <h1
         style={{
           position: "absolute",
           top: "25vh",
@@ -26,7 +26,7 @@ const IndexPage = () => {
         }}
       >
         HELLO
-      </h1> */}
+      </h1>
       {/* <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
         <Image />
       </div> */}
@@ -44,7 +44,7 @@ function HandCanvas() {
       handAnimated: file(relativePath: { eq: "hand-animated.glb" }) {
         publicURL
       }
-      textureImage: file(relativePath: { eq: "neon-marble-texture.jpg" }) {
+      textureImage: file(relativePath: { eq: "slime-marble-texture.jpg" }) {
         publicURL
       }
     }
@@ -54,6 +54,13 @@ function HandCanvas() {
   // See: https://www.gatsbyjs.com/docs/debugging-html-builds/
   const pixelRatio = useRef(1)
   useEffect(() => void (pixelRatio.current = window.devicePixelRatio), [])
+
+  const motion = useSpring(1, {
+    restDelta: 0.1,
+    stiffness: 77,
+    // mass: 7,
+    // damping: 7,
+  })
 
   return (
     <Canvas
@@ -70,13 +77,10 @@ function HandCanvas() {
         top: 0,
       }}
     >
-      <hemisphereLight
-        color={new Color("#00CC99")}
-        groundColor={new Color("#0066CC")}
-        intensity={0.69}
-        position={[0, 50, 0]}
-      />
-      <directionalLight position={[-8, 12, 8]} castShadow />
+      <ambientLight intensity={0.2} color="#fff" />
+      <directionalLight intensity={1} position={[0, -20, 10]} color="#f00" />
+      <pointLight intensity={0.35} position={[-20, 10, 5]} color="#f0a" />
+      <pointLight intensity={0.1} position={[20, 10, 5]} color="#fff" />
       <Suspense fallback={null}>
         <group position={[0, 7, 14]}>
           <HandAnimatedModel
@@ -85,54 +89,54 @@ function HandCanvas() {
             position={[0, -80, 0]}
             rotation={[0, 0, 0]}
             scale={[40, 40, 40]}
+            motion={motion}
           />
           {/* Thumb */}
           <Blob
             wireframe
-            isInvalid={false}
-            isModified={false}
-            segments={30}
+            segments={20}
             position={[-18, -10, -30]}
+            size={1}
+            motion={motion}
           />
           {/* Index */}
           <Blob
             wireframe
-            isInvalid={false}
-            isModified={false}
-            segments={30}
+            segments={20}
             position={[-9, -4, -40]}
+            size={1}
+            motion={motion}
           />
           {/* Middle */}
           <Blob
             wireframe
-            isInvalid={false}
-            isModified={false}
-            segments={30}
+            segments={20}
             position={[0, -2.5, -36]}
+            size={1}
+            motion={motion}
           />
           {/* Ring */}
           <Blob
             wireframe
-            isInvalid={false}
-            isModified={false}
-            segments={30}
+            segments={20}
             position={[7, -4, -35]}
+            size={1}
+            motion={motion}
           />
           {/* Pinkie */}
           <Blob
             wireframe
-            isInvalid={false}
-            isModified={false}
-            segments={30}
+            segments={20}
             position={[12.5, -7, -33]}
+            size={1}
+            motion={motion}
           />
           <Blob
             wireframe
-            isInvalid={false}
-            isModified={false}
             segments={40}
             position={[0, -15, -25]}
-            scale={[6, 6, 6]}
+            size={6}
+            motion={motion}
           />
         </group>
       </Suspense>

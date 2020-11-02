@@ -14,6 +14,7 @@ import {
   Bone,
   Group,
   IUniform,
+  LoopOnce,
   LoopPingPong,
   MeshStandardMaterial,
   ShaderMaterial,
@@ -25,6 +26,7 @@ import useTexture from "../../lib/hooks/useTexture"
 // Leveraging WebPack's raw loader
 import fluidMarbleFragment from "raw-loader!./shaders/fluidMarbleFragment.glsl"
 import fluidMarbleVertex from "raw-loader!./shaders/fluidMarbleVertex.glsl"
+import { MotionValue } from "framer-motion"
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -44,6 +46,7 @@ type GLTFActions = Record<ActionName, AnimationAction>
 interface IHandProps {
   gltfURL: string
   textureURL: string
+  motion: MotionValue
 }
 
 interface IFragmentUniforms {
@@ -52,7 +55,7 @@ interface IFragmentUniforms {
 
 const HandAnimatedModel: FunctionComponent<
   IHandProps & JSX.IntrinsicElements["group"]
-> = ({ gltfURL, textureURL, ...props }) => {
+> = ({ gltfURL, textureURL, motion, ...props }) => {
   useLayoutEffect(() => void useGLTF.preload(gltfURL), [gltfURL])
 
   const group = useRef<Group>()
@@ -83,15 +86,19 @@ const HandAnimatedModel: FunctionComponent<
   useFrame(({ clock }, delta) => {
     mixer.update(delta)
     uniforms.current.time.value = clock.getElapsedTime()
+
+    if (motion.get() === 0 && actions.current) actions.current.rigAction.play()
   })
 
   useEffect(() => {
     actions.current = {
       rigAction: mixer.clipAction(animations[0], group.current),
     }
-    actions.current.rigAction.timeScale = 1
-    actions.current.rigAction.loop = LoopPingPong
-    // actions.current.rigAction.play()
+    actions.current.rigAction.timeScale = 15
+    // actions.current.rigAction.loop = LoopPingPong
+    actions.current.rigAction.loop = LoopOnce
+    actions.current.rigAction.clampWhenFinished = true
+
     return () => animations.forEach(clip => mixer.uncacheClip(clip))
   }, [])
 
