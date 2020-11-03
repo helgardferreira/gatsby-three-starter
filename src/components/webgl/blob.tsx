@@ -1,4 +1,4 @@
-import React, { useRef, FunctionComponent, useEffect } from "react"
+import React, { useRef, FunctionComponent, useEffect, useContext } from "react"
 import { useFrame } from "react-three-fiber"
 import {
   Mesh,
@@ -8,17 +8,17 @@ import {
   ShaderMaterial,
   SphereGeometry,
 } from "three"
-import { MotionValue, useSpring, useTransform } from "framer-motion"
+import { useSpring, useTransform } from "framer-motion"
 
 import blobVertex from "raw-loader!./shaders/blobVertex.glsl"
+import { MotionContext } from "../../lib/MotionContext"
 
 interface IBlobProps {
   isInvalid?: boolean
   isModified?: boolean
   segments?: number
   wireframe?: boolean
-  size?: number
-  motion?: MotionValue
+  sizeFactor?: number
 }
 
 const Blob: FunctionComponent<IBlobProps & JSX.IntrinsicElements["mesh"]> = ({
@@ -26,8 +26,7 @@ const Blob: FunctionComponent<IBlobProps & JSX.IntrinsicElements["mesh"]> = ({
   isModified = false,
   segments = 50,
   wireframe = false,
-  size = 1,
-  motion = useSpring(1),
+  sizeFactor: size = 1,
   ...props
 }) => {
   const timeOffset = useRef(Math.random() * 1000)
@@ -45,6 +44,7 @@ const Blob: FunctionComponent<IBlobProps & JSX.IntrinsicElements["mesh"]> = ({
     [`#ff00ff`, `#ff00ff`, `#ff0050`]
   )
 
+  const motion = useContext(MotionContext)
   const blobMotion = useTransform(motion, val => val * size)
 
   blobMotion.onChange(() => {

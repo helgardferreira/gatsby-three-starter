@@ -4,6 +4,7 @@ import React, {
   useEffect,
   FunctionComponent,
   useLayoutEffect,
+  useContext,
 } from "react"
 import { useFrame } from "react-three-fiber"
 
@@ -15,7 +16,6 @@ import {
   Group,
   IUniform,
   LoopOnce,
-  LoopPingPong,
   MeshStandardMaterial,
   ShaderMaterial,
   SkinnedMesh,
@@ -26,7 +26,7 @@ import useTexture from "../../lib/hooks/useTexture"
 // Leveraging WebPack's raw loader
 import fluidMarbleFragment from "raw-loader!./shaders/fluidMarbleFragment.glsl"
 import fluidMarbleVertex from "raw-loader!./shaders/fluidMarbleVertex.glsl"
-import { MotionValue } from "framer-motion"
+import { MotionContext } from "../../lib/MotionContext"
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -46,7 +46,6 @@ type GLTFActions = Record<ActionName, AnimationAction>
 interface IHandProps {
   gltfURL: string
   textureURL: string
-  motion: MotionValue
 }
 
 interface IFragmentUniforms {
@@ -55,7 +54,7 @@ interface IFragmentUniforms {
 
 const HandAnimatedModel: FunctionComponent<
   IHandProps & JSX.IntrinsicElements["group"]
-> = ({ gltfURL, textureURL, motion, ...props }) => {
+> = ({ gltfURL, textureURL, ...props }) => {
   useLayoutEffect(() => void useGLTF.preload(gltfURL), [gltfURL])
 
   const group = useRef<Group>()
@@ -82,6 +81,8 @@ const HandAnimatedModel: FunctionComponent<
     fragmentShader: fluidMarbleFragment,
     skinning: true,
   })
+
+  const motion = useContext(MotionContext)
 
   useFrame(({ clock }, delta) => {
     mixer.update(delta)
