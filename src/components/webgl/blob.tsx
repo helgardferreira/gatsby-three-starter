@@ -12,6 +12,7 @@ import { useSpring, useTransform } from "framer-motion"
 
 import blobVertex from "raw-loader!./shaders/blobVertex.glsl"
 import { MotionContext } from "../../lib/MotionContext"
+import { LoadingContext } from "../../lib/LoadingContext"
 
 interface IBlobProps {
   isInvalid?: boolean
@@ -88,22 +89,29 @@ const Blob: FunctionComponent<IBlobProps & JSX.IntrinsicElements["mesh"]> = ({
       diffuseColor.current.set(color.get())
     }
   })
+  const loading = useContext(LoadingContext)
 
   return (
     <mesh
       ref={mesh}
       scale={[blobMotion.get(), blobMotion.get(), blobMotion.get()]}
       onClick={() => {
-        amp.set(0.8)
-        motion.set(0)
+        if (!loading.current) {
+          amp.set(0.8)
+          motion.set(0)
+        }
       }}
       onPointerOver={() => {
-        amp.set(0.6)
-        document.body.style.cursor = "pointer"
+        if (!loading.current) {
+          amp.set(0.6)
+          document.body.style.cursor = "pointer"
+        }
       }}
       onPointerOut={() => {
-        amp.set(0.0)
-        document.body.style.cursor = "auto"
+        if (!loading.current) {
+          amp.set(0.0)
+          document.body.style.cursor = "auto"
+        }
       }}
       {...props}
     >
