@@ -9,14 +9,14 @@ import HandCanvas from "../components/webgl/handCanvas"
 
 const HeaderHeading = styled.h1`
   position: absolute;
-  top: 50vh;
+  top: max(50vh, 250px);
   left: 100px;
   transform: translateY(-100%);
 `
 
 const StyledLink = styled(Link)`
   position: relative;
-  top: 20vh;
+  top: max(20vh, 100px);
   left: 100px;
 `
 
