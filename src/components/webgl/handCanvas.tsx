@@ -10,6 +10,9 @@ import Blob from "./blob"
 import HandAnimatedModel from "./handAnimated"
 import SceneLoader from "./sceneLoader"
 
+// Useful for exploring scene in development mode
+// import CameraControls from "./cameraControls"
+
 const SceneLights = () => (
   <group>
     <ambientLight intensity={0.2} color="#fff" />

@@ -7,9 +7,6 @@ import SEO from "../components/seo"
 import styled from "styled-components"
 import HandCanvas from "../components/webgl/handCanvas"
 
-// Useful for exploring scene in development mode
-// import CameraControls from "../components/webgl/cameraControls"
-
 const HeaderHeading = styled.h1`
   position: absolute;
   top: 25vh;
