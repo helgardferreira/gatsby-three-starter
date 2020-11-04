@@ -3,6 +3,7 @@ import { graphql, useStaticQuery } from "gatsby"
 import React, { Suspense, useEffect, useRef } from "react"
 import { Canvas } from "react-three-fiber"
 import styled from "styled-components"
+
 import { LoadingContext } from "../../lib/LoadingContext"
 import { MotionContext } from "../../lib/MotionContext"
 

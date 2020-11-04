@@ -1,9 +1,15 @@
-import { Html, useProgress } from "@react-three/drei"
-import { motion, useSpring, useTransform } from "framer-motion"
 import React, { FunctionComponent, useContext, useRef } from "react"
-import { useFrame } from "react-three-fiber"
+import { motion, useSpring, useTransform } from "framer-motion"
 import styled from "styled-components"
+import { useFrame } from "react-three-fiber"
+import { Html, useProgress } from "@react-three/drei"
+
 import { LoadingContext } from "../../lib/LoadingContext"
+
+const LoadingContainer = styled(Html)`
+  width: 100vw;
+  height: 100vh;
+`
 
 const LoadingScreen = styled(motion.div)`
   position: absolute;
@@ -30,6 +36,8 @@ const SceneLoader: FunctionComponent = () => {
 
   const timerToken = useRef(0)
 
+  const letters = Array.from("LOADING...")
+
   if (loading.current) percent.set(progress)
 
   useFrame(() => {
@@ -49,19 +57,47 @@ const SceneLoader: FunctionComponent = () => {
   })
 
   return (
-    <Html
-      center
-      style={{
-        width: `100vw`,
-        height: `100vh`,
-      }}
-    >
+    <LoadingContainer center>
       <LoadingScreen
         style={{
           opacity,
         }}
       />
       <LoadingBar>
+        <motion.h2
+          style={{
+            fontSize: "50px",
+            height: "50px",
+            fontWeight: "bold",
+            position: "absolute",
+            left: "50%",
+            transform: "translate(-50%, -120%)",
+            textAlign: "center",
+            display: "flex",
+            justifyContent: "center",
+            opacity,
+          }}
+        >
+          {letters.map((letter, index) => (
+            <motion.span
+              key={index}
+              style={{
+                width: "auto",
+                height: "50px",
+                position: "relative",
+              }}
+              animate={{ y: [-20, 0, 0, -20] }}
+              transition={{
+                repeat: Infinity,
+                delay: index * 0.06,
+                duration: 1.6,
+                times: [0, 0.2, 0.8, 1],
+              }}
+            >
+              {letter}
+            </motion.span>
+          ))}
+        </motion.h2>
         <motion.div
           style={{
             width,
@@ -70,7 +106,7 @@ const SceneLoader: FunctionComponent = () => {
           }}
         ></motion.div>
       </LoadingBar>
-    </Html>
+    </LoadingContainer>
   )
 }
 
