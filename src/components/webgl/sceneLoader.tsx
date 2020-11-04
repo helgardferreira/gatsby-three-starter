@@ -28,7 +28,7 @@ const SceneLoader: FunctionComponent = () => {
   const width = useTransform(percent, val => val * 4)
   const opacity = useSpring(1)
 
-  const timerToken = useRef<number>(0)
+  const timerToken = useRef(0)
 
   if (loading.current) percent.set(progress)
 

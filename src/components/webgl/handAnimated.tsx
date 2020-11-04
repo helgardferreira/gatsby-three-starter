@@ -67,7 +67,6 @@ const HandAnimatedModel: FunctionComponent<
   const texture = useTexture(textureURL)
 
   const uniforms = useRef<IFragmentUniforms>({
-    // resolution: { value: new Vector3() },
     time: { value: 0 },
     marble: { value: texture },
   })
@@ -84,18 +83,30 @@ const HandAnimatedModel: FunctionComponent<
 
   const motion = useContext(MotionContext)
 
+  const canAnimate = useRef(true)
+  const timerToken = useRef(0)
+
   useFrame(({ clock }, delta) => {
     mixer.update(delta)
     uniforms.current.time.value = clock.getElapsedTime()
 
-    if (motion.get() === 0 && actions.current) actions.current.rigAction.play()
+    if (
+      canAnimate.current &&
+      actions.current &&
+      !actions.current.rigAction.isRunning() &&
+      motion.get() === 0
+    ) {
+      actions.current?.rigAction.setEffectiveTimeScale(15)
+      actions.current.rigAction.paused = false
+      actions.current.rigAction.play()
+      canAnimate.current = false
+    }
   })
 
   useEffect(() => {
     actions.current = {
       rigAction: mixer.clipAction(animations[0], group.current),
     }
-    actions.current.rigAction.timeScale = 15
     // actions.current.rigAction.loop = LoopPingPong
     actions.current.rigAction.loop = LoopOnce
     actions.current.rigAction.clampWhenFinished = true
@@ -104,7 +115,27 @@ const HandAnimatedModel: FunctionComponent<
   }, [])
 
   return (
-    <group ref={group} {...props}>
+    <group
+      ref={group}
+      {...props}
+      onClick={() => {
+        if (timerToken.current === 0 && actions.current && motion.get() === 0) {
+          timerToken.current = setTimeout(() => {
+            motion.set(1)
+            timerToken.current = 0
+
+            setTimeout(() => {
+              canAnimate.current = true
+            }, 100)
+          }, 2000 / 15)
+          actions.current.rigAction.paused = false
+          // Time set to just before final frame =>
+          //  2 seconds (normal animation duration) / 15 timescale (playback multiplier)
+          actions.current.rigAction.getMixer().setTime(0.13)
+          actions.current.rigAction.setEffectiveTimeScale(-15)
+        }
+      }}
+    >
       <group position={[0, 0, 0]} scale={[1, 1, 1]}>
         <group position={[0, 0, 0]} scale={[1, 1, 1]}>
           <primitive object={nodes.root} />
