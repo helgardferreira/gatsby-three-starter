@@ -39,10 +39,8 @@ const FingerBlobs = () => (
   </group>
 )
 
-const StyledCanvas = styled(Canvas)`
-  padding: 0;
-  margin: 0;
-  width: 100%;
+const CanvasContainer = styled.div`
+  width: 100vw;
   height: 100vh;
   position: absolute;
   z-index: -1;
@@ -76,8 +74,8 @@ function HandCanvas() {
   })
 
   return (
-    <>
-      <StyledCanvas
+    <CanvasContainer>
+      <Canvas
         pixelRatio={pixelRatio.current}
         camera={{ position: [0, 10, 15], rotation: [0, 0, 0] }}
       >
@@ -100,8 +98,8 @@ function HandCanvas() {
           {/* <CameraControls /> */}
           <SceneLoader />
         </LoadingContext.Provider>
-      </StyledCanvas>
-    </>
+      </Canvas>
+    </CanvasContainer>
   )
 }
 
