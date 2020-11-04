@@ -1,5 +1,5 @@
-import React, { FunctionComponent, useContext, useRef } from "react"
-import { motion, useSpring, useTransform } from "framer-motion"
+import React, { FunctionComponent, useContext, useEffect, useRef } from "react"
+import { motion, useAnimation, useSpring, useTransform } from "framer-motion"
 import styled from "styled-components"
 import { useFrame } from "react-three-fiber"
 import { Html, useProgress } from "@react-three/drei"
@@ -24,6 +24,29 @@ const LoadingBar = styled.div`
   top: 50%;
   /* transform: translate(-200px, -50%); */
   transform: translate(-50%, -50%);
+
+  div {
+    height: 10px;
+    background: #fff;
+  }
+`
+
+const LoadingText = styled(motion.h2)`
+  font-size: 50px;
+  height: 50px;
+  font-weight: bold;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -120%);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+
+  span {
+    width: auto;
+    height: 50px;
+    position: relative;
+  }
 `
 
 const SceneLoader: FunctionComponent = () => {
@@ -35,10 +58,22 @@ const SceneLoader: FunctionComponent = () => {
   const opacity = useSpring(1)
 
   const timerToken = useRef(0)
+  const loadingContainerRef = useRef<HTMLDivElement>(null)
+
+  const controls = useAnimation()
 
   const letters = Array.from("LOADING...")
 
   if (loading.current) percent.set(progress)
+
+  useEffect(() => {
+    controls.start({
+      y: [-20, 0, 0, -20],
+    })
+    return () => {
+      controls.stop()
+    }
+  }, [])
 
   useFrame(() => {
     if (timerToken.current === 0 && !active) {
@@ -47,6 +82,13 @@ const SceneLoader: FunctionComponent = () => {
         loading.current = false
         percent.set(0)
         opacity.set(0)
+
+        setTimeout(() => {
+          if (loadingContainerRef.current !== null) {
+            loadingContainerRef.current.style.display = "none"
+          }
+          controls.stop()
+        }, 1000)
       }, 1000)
     }
 
@@ -57,36 +99,14 @@ const SceneLoader: FunctionComponent = () => {
   })
 
   return (
-    <LoadingContainer center>
-      <LoadingScreen
-        style={{
-          opacity,
-        }}
-      />
+    <LoadingContainer center ref={loadingContainerRef}>
+      <LoadingScreen style={{ opacity }} />
       <LoadingBar>
-        <motion.h2
-          style={{
-            fontSize: "50px",
-            height: "50px",
-            fontWeight: "bold",
-            position: "absolute",
-            left: "50%",
-            transform: "translate(-50%, -120%)",
-            textAlign: "center",
-            display: "flex",
-            justifyContent: "center",
-            opacity,
-          }}
-        >
+        <LoadingText style={{ opacity }}>
           {letters.map((letter, index) => (
             <motion.span
               key={index}
-              style={{
-                width: "auto",
-                height: "50px",
-                position: "relative",
-              }}
-              animate={{ y: [-20, 0, 0, -20] }}
+              animate={controls}
               transition={{
                 repeat: Infinity,
                 delay: index * 0.06,
@@ -97,14 +117,8 @@ const SceneLoader: FunctionComponent = () => {
               {letter}
             </motion.span>
           ))}
-        </motion.h2>
-        <motion.div
-          style={{
-            width,
-            height: 10,
-            background: "#fff",
-          }}
-        ></motion.div>
+        </LoadingText>
+        <motion.div style={{ width }} />
       </LoadingBar>
     </LoadingContainer>
   )
