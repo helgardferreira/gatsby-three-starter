@@ -118,6 +118,13 @@ const HandAnimatedModel: FunctionComponent<
     <group
       ref={group}
       {...props}
+      onPointerOut={() => {
+        document.body.style.cursor = "auto"
+      }}
+      onPointerMove={() => {
+        if (document.body.style.cursor !== "pointer")
+          document.body.style.cursor = "pointer"
+      }}
       onClick={() => {
         if (timerToken.current === 0 && actions.current && motion.get() === 0) {
           timerToken.current = setTimeout(() => {
