@@ -45,14 +45,14 @@ A quick look at the top-level files and directories you'll see in a Gatsby proje
     .
     ├── node_modules
     ├── src
-        ├── components
-            └── webgl
-                └── shaders
-        ├── images
-        ├── lib
-            └── hooks
-        ├── models
-        └── pages
+    │   ├── components
+    │   │   └── webgl
+    │   │       └── shaders
+    │   ├── images
+    │   ├── lib
+    │   │   └── hooks
+    │   ├── models
+    │   └── pages
     ├── .gitignore
     ├── .prettierrc
     ├── gatsby-browser.js
