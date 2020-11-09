@@ -3,6 +3,7 @@ import { motion, useSpring, useTransform } from "framer-motion"
 import styled from "styled-components"
 import { useSelector } from "react-redux"
 import { LoadErrorState, LoadState } from "../state/reducers/loader.reducer"
+import AnimatedLoadingText from "./animatedLoadingText"
 
 const LoadingContainer = styled(motion.div)`
   position: fixed;
@@ -31,43 +32,6 @@ const StyledLoadingBar = styled.div`
     background: #fff;
   }
 `
-
-const AnimatedText = styled(motion.h2)`
-  font-size: 50px;
-  height: 50px;
-  font-weight: bold;
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -120%);
-  text-align: center;
-  display: flex;
-  justify-content: center;
-
-  span {
-    width: auto;
-    height: 50px;
-    position: relative;
-  }
-`
-
-const AnimatedLoadingText: FunctionComponent = () => (
-  <AnimatedText>
-    {Array.from("LOADING...").map((letter, index) => (
-      <motion.span
-        key={index}
-        animate={{ y: [-20, 0, 0, -20] }}
-        transition={{
-          repeat: Infinity,
-          delay: index * 0.06,
-          duration: 1.6,
-          times: [0, 0.2, 0.8, 1],
-        }}
-      >
-        {letter}
-      </motion.span>
-    ))}
-  </AnimatedText>
-)
 
 const SceneLoader: FunctionComponent = () => {
   // Reminder: useSelector automatically subscribes component to store
@@ -99,7 +63,9 @@ const SceneLoader: FunctionComponent = () => {
         setIsVisible(false)
       }, 1000)
     }, 1000)
-  } else {
+  }
+
+  if (timerToken.current !== 0 && active) {
     clearTimeout(timerToken.current)
     timerToken.current = 0
   }
