@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useRef, useState } from "react"
 import { motion, useSpring, useTransform } from "framer-motion"
 import styled from "styled-components"
-import { useSelector, useStore } from "react-redux"
+import { useStore } from "react-redux"
 import { LoadErrorState, LoadState } from "../state/reducers/loader.reducer"
 import AnimatedLoadingText from "./animatedLoadingText"
 

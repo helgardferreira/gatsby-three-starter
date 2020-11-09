@@ -23,7 +23,7 @@ const CameraControls = () => {
   } = useThree()
 
   const controls = useRef<OrbitControls>()
-  useFrame(state => void controls.current?.update())
+  useFrame(() => void controls.current?.update())
 
   return <orbitControls ref={controls} args={[camera, domElement]} />
 }
