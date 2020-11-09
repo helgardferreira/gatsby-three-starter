@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useRef, useState } from "react"
 import { motion, useSpring, useTransform } from "framer-motion"
 import styled from "styled-components"
-import { useSelector } from "react-redux"
+import { useSelector, useStore } from "react-redux"
 import { LoadErrorState, LoadState } from "../state/reducers/loader.reducer"
 import AnimatedLoadingText from "./animatedLoadingText"
 
@@ -35,40 +35,37 @@ const StyledLoadingBar = styled.div`
 
 const SceneLoader: FunctionComponent = () => {
   // Reminder: useSelector automatically subscribes component to store
-  const { active, progress } = useSelector<
-    { loader: LoadState & LoadErrorState },
-    { active: boolean; progress: number }
-  >(({ loader: { active, progress } }) => ({
-    active,
-    progress,
-  }))
+  const store = useStore<{ loader: LoadState & LoadErrorState }>()
 
   const percent = useSpring(0)
   const opacity = useSpring(1)
   const width = useTransform(percent, val => val * 4)
 
-  percent.set(progress)
-
   const timerToken = useRef<number>(0)
 
   const [isVisible, setIsVisible] = useState(true)
 
-  // Timeout delay logic for smoother transition from loading screen
-  if (timerToken.current === 0 && !active) {
-    timerToken.current = setTimeout(() => {
-      percent.set(0)
-      opacity.set(0)
+  store.subscribe(() => {
+    const { active, progress } = store.getState().loader
+    percent.set(progress)
 
-      setTimeout(() => {
-        setIsVisible(false)
+    // Timeout delay logic for smoother transition from loading screen
+    if (timerToken.current === 0 && !active) {
+      timerToken.current = setTimeout(() => {
+        percent.set(0)
+        opacity.set(0)
+
+        setTimeout(() => {
+          setIsVisible(false)
+        }, 1000)
       }, 1000)
-    }, 1000)
-  }
+    }
 
-  if (timerToken.current !== 0 && active) {
-    clearTimeout(timerToken.current)
-    timerToken.current = 0
-  }
+    if (timerToken.current !== 0 && active) {
+      clearTimeout(timerToken.current)
+      timerToken.current = 0
+    }
+  })
 
   return isVisible ? (
     <LoadingContainer>

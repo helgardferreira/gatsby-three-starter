@@ -4,7 +4,6 @@ import React, {
   useEffect,
   FunctionComponent,
   useLayoutEffect,
-  useContext,
 } from "react"
 import { useFrame } from "react-three-fiber"
 
@@ -26,7 +25,9 @@ import useTexture from "../../lib/hooks/useTexture"
 // Leveraging WebPack's raw loader
 import fluidMarbleFragment from "raw-loader!./shaders/fluidMarbleFragment.glsl"
 import fluidMarbleVertex from "raw-loader!./shaders/fluidMarbleVertex.glsl"
-import { MotionContext } from "../../lib/MotionContext"
+import { useSpring } from "framer-motion"
+import { useDispatch, useStore } from "react-redux"
+import { MotionAction, MotionState } from "../../state/reducers/motion.reducer"
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -55,7 +56,8 @@ interface IFragmentUniforms {
 const HandAnimatedModel: FunctionComponent<
   IHandProps & JSX.IntrinsicElements["group"]
 > = ({ gltfURL, textureURL, ...props }) => {
-  useLayoutEffect(() => void useGLTF.preload(gltfURL), [gltfURL])
+  const store = useStore<{ motion: MotionState }>()
+  const dispatch = useDispatch()
 
   const group = useRef<Group>()
   const {
@@ -63,17 +65,13 @@ const HandAnimatedModel: FunctionComponent<
     // materials,
     animations,
   } = useGLTF<GLTFResult>(gltfURL)
-
   const texture = useTexture(textureURL)
-
   const uniforms = useRef<IFragmentUniforms>({
     time: { value: 0 },
     marble: { value: texture },
   })
-
   const actions = useRef<GLTFActions>()
   const [mixer] = useState(() => new AnimationMixer(nodes.hand_anatomy_man))
-
   const shaderMaterial = new ShaderMaterial({
     uniforms: uniforms.current,
     vertexShader: fluidMarbleVertex,
@@ -81,10 +79,31 @@ const HandAnimatedModel: FunctionComponent<
     skinning: true,
   })
 
-  const motion = useContext(MotionContext)
+  const motion = useSpring(1, {
+    restDelta: 0.1, // 0.01
+    stiffness: 77, // 100
+    // mass: 1,
+    // damping: 10,
+  })
 
   const canAnimate = useRef(true)
   const timerToken = useRef(0)
+
+  store.subscribe(() => {
+    motion.set(store.getState().motion.handMotionValue)
+  })
+
+  useLayoutEffect(() => void useGLTF.preload(gltfURL), [gltfURL])
+  useEffect(() => {
+    actions.current = {
+      rigAction: mixer.clipAction(animations[0], group.current),
+    }
+    // actions.current.rigAction.loop = LoopPingPong
+    actions.current.rigAction.loop = LoopOnce
+    actions.current.rigAction.clampWhenFinished = true
+
+    return () => animations.forEach(clip => mixer.uncacheClip(clip))
+  }, [])
 
   useFrame(({ clock }, delta) => {
     mixer.update(delta)
@@ -103,17 +122,6 @@ const HandAnimatedModel: FunctionComponent<
     }
   })
 
-  useEffect(() => {
-    actions.current = {
-      rigAction: mixer.clipAction(animations[0], group.current),
-    }
-    // actions.current.rigAction.loop = LoopPingPong
-    actions.current.rigAction.loop = LoopOnce
-    actions.current.rigAction.clampWhenFinished = true
-
-    return () => animations.forEach(clip => mixer.uncacheClip(clip))
-  }, [])
-
   return (
     <group
       ref={group}
@@ -128,7 +136,10 @@ const HandAnimatedModel: FunctionComponent<
       onClick={() => {
         if (timerToken.current === 0 && actions.current && motion.get() === 0) {
           timerToken.current = setTimeout(() => {
-            motion.set(1)
+            dispatch<MotionAction>({
+              type: "UPDATE_MOTION",
+              handMotionValue: 1,
+            })
             timerToken.current = 0
 
             setTimeout(() => {

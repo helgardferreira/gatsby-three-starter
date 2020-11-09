@@ -1,15 +1,12 @@
-import { useSpring } from "framer-motion"
 import { graphql, useStaticQuery } from "gatsby"
 import React, { Suspense, useEffect, useRef } from "react"
 import { Canvas } from "react-three-fiber"
 import styled from "styled-components"
 
-import { LoadingContext } from "../../lib/LoadingContext"
-import { MotionContext } from "../../lib/MotionContext"
-
 import Blob from "./blob"
 import HandAnimatedModel from "./handAnimated"
 import SceneLoader from "../sceneLoader"
+import { Provider, ReactReduxContext } from "react-redux"
 
 // Useful for exploring scene in development mode
 // import CameraControls from "./cameraControls"
@@ -63,42 +60,36 @@ function HandCanvas() {
 
   // Hack for Gatsby static site generator since window is not available at compilation time
   // See: https://www.gatsbyjs.com/docs/debugging-html-builds/
-  const loadingRef = useRef(true)
   const pixelRatio = useRef(1)
   useEffect(() => void (pixelRatio.current = window.devicePixelRatio), [])
 
-  const motion = useSpring(1, {
-    restDelta: 0.1, // 0.01
-    stiffness: 77, // 100
-    // mass: 1,
-    // damping: 10,
-  })
-
   return (
     <CanvasContainer>
-      <Canvas
-        pixelRatio={pixelRatio.current}
-        camera={{ position: [0, 10, 15], rotation: [0, 0, 0] }}
-      >
-        <LoadingContext.Provider value={loadingRef}>
-          <SceneLights />
-          <Suspense fallback={null}>
-            <MotionContext.Provider value={motion}>
-              <group position={[0, 7, 14]}>
-                <HandAnimatedModel
-                  gltfURL={handAnimated.publicURL}
-                  textureURL={textureImage.publicURL}
-                  position={[0, -80, 0]}
-                  rotation={[0, 0, 0]}
-                  scale={[40, 40, 40]}
-                />
-                <FingerBlobs />
-              </group>
-            </MotionContext.Provider>
-          </Suspense>
-          {/* <CameraControls /> */}
-        </LoadingContext.Provider>
-      </Canvas>
+      <ReactReduxContext.Consumer>
+        {({ store }) => (
+          <Canvas
+            pixelRatio={pixelRatio.current}
+            camera={{ position: [0, 10, 15], rotation: [0, 0, 0] }}
+          >
+            <Provider store={store}>
+              <SceneLights />
+              <Suspense fallback={null}>
+                <group position={[0, 7, 14]}>
+                  <HandAnimatedModel
+                    gltfURL={handAnimated.publicURL}
+                    textureURL={textureImage.publicURL}
+                    position={[0, -80, 0]}
+                    rotation={[0, 0, 0]}
+                    scale={[40, 40, 40]}
+                  />
+                  <FingerBlobs />
+                </group>
+              </Suspense>
+              {/* <CameraControls /> */}
+            </Provider>
+          </Canvas>
+        )}
+      </ReactReduxContext.Consumer>
       <SceneLoader />
     </CanvasContainer>
   )
