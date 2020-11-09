@@ -9,7 +9,7 @@ import { MotionContext } from "../../lib/MotionContext"
 
 import Blob from "./blob"
 import HandAnimatedModel from "./handAnimated"
-import SceneLoader from "./sceneLoader"
+import SceneLoader from "../sceneLoader"
 
 // Useful for exploring scene in development mode
 // import CameraControls from "./cameraControls"
@@ -97,9 +97,9 @@ function HandCanvas() {
             </MotionContext.Provider>
           </Suspense>
           {/* <CameraControls /> */}
-          <SceneLoader />
         </LoadingContext.Provider>
       </Canvas>
+      <SceneLoader />
     </CanvasContainer>
   )
 }

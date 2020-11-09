@@ -24,7 +24,19 @@ const SEO: FunctionComponent<IProps> = ({
   meta = [],
   title = "",
 }) => {
-  const { site } = useStaticQuery(
+  const {
+    site,
+  }: {
+    site: {
+      siteMetadata:
+        | {
+            title: string
+            description: string
+            author: string
+          }
+        | undefined
+    }
+  } = useStaticQuery(
     graphql`
       query {
         site {
@@ -38,7 +50,7 @@ const SEO: FunctionComponent<IProps> = ({
     `
   )
 
-  const metaDescription = description || site.siteMetadata.description
+  const metaDescription = description || site.siteMetadata?.description
   const defaultTitle = site.siteMetadata?.title
 
   return (
@@ -47,7 +59,7 @@ const SEO: FunctionComponent<IProps> = ({
         lang,
       }}
       title={title}
-      titleTemplate={defaultTitle ? `%s | ${defaultTitle}` : null}
+      titleTemplate={defaultTitle ? `%s | ${defaultTitle}` : undefined}
       meta={([
         {
           name: `description`,

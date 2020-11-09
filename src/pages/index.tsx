@@ -23,8 +23,8 @@ const StyledLink = styled(Link)`
 const IndexPage = () => {
   return (
     <Layout>
-      <HandCanvas />
       <SEO title="Home" />
+      <HandCanvas />
       <HeaderHeading>HELLO</HeaderHeading>
       <StyledLink to="/page-2/">Go to page 2</StyledLink> <br />
       <StyledLink to="/using-typescript/">
